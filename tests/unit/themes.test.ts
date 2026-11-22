@@ -25,6 +25,14 @@ describe('themes', () => {
         }
       }
     });
+    it(`${t.id}: code and status colors reach AA on panels`, () => {
+      const c = t.colors;
+      for (const fg of [c.accent, c.accent2, c.info, c.success, c.warning, c.danger]) {
+        for (const bg of [c.surface, c.surfaceAlt]) {
+          expect(contrastRatio(fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    });
     it(`${t.id}: onAccent reaches AA on accent`, () => {
       expect(contrastRatio(t.colors.onAccent, t.colors.accent)).toBeGreaterThanOrEqual(4.5);
     });

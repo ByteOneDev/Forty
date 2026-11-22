@@ -26,11 +26,11 @@ function make(id: ThemeId, name: string, kind: Theme['kind'], palette: string): 
 
 export const THEMES: Theme[] = [
   make('minuit', 'Minuit', 'dark', '#15172a #1c1f36 #242844 #30355a #cdd3f5 #8f97c2 #a98bf5 #15172a #f2728f #78a6f5 #93d47a #e8b86d #f2728f'),
-  make('graphite', 'Graphite', 'dark', '#1e1f22 #2b2d30 #34363b #43454a #dfe1e5 #a3a6ad #2a66d9 #ffffff #c77dbb #6fa8f0 #6aab73 #e0b44b #f75464'),
+  make('graphite', 'Graphite', 'dark', '#1e1f22 #2b2d30 #34363b #43454a #dfe1e5 #a3a6ad #7ca1e8 #1e1f22 #cd8bc2 #6fa8f0 #71af79 #e0b44b #f97b87'),
   make('foret', 'Forêt', 'dark', '#121c18 #18251f #203029 #2c4036 #d6e6dc #93ad9f #5fd4a8 #121c18 #e9b35f #6fb3d9 #7fd17f #e9b35f #f07b6e'),
-  make('sable', 'Sable', 'light', '#f5efe3 #fbf7ef #ede4d3 #ddd0b8 #3a342b #5f574a #2a74b5 #ffffff #b0652c #2a74b5 #4f7f3a #8f6812 #b83f37'),
-  make('nuage', 'Nuage', 'light', '#f7f8fa #ffffff #eef1f5 #dde2ea #1f2430 #565e6e #2f6fde #ffffff #8a5cd6 #2f6fde #3a7f4c #8a6a12 #c43a4a'),
-  make('lavande', 'Lavande', 'light', '#f6f3fb #fdfbff #ece6f6 #dcd3ec #2e2840 #5c5372 #7a4fd0 #ffffff #b5603f #5a62c8 #3d7f55 #8a6a12 #bf3f5e'),
+  make('sable', 'Sable', 'light', '#f5efe3 #fbf7ef #ede4d3 #ddd0b8 #3a342b #5f574a #2567a0 #ffffff #935525 #2567a0 #446d32 #815e10 #b03c35'),
+  make('nuage', 'Nuage', 'light', '#f7f8fa #ffffff #eef1f5 #dde2ea #1f2430 #565e6e #2366db #ffffff #8150d3 #2366db #377848 #856711 #c03949'),
+  make('lavande', 'Lavande', 'light', '#f6f3fb #fdfbff #ece6f6 #dcd3ec #2e2840 #5c5372 #774bcf #ffffff #9b5236 #525bc5 #36714c #816311 #b33b58'),
 ];
 
 export function getTheme(id: ThemeId): Theme {
