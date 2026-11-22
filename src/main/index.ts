@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import * as nodePty from 'node-pty';
 import { IPC, type Settings } from '@shared/types';
 import { userDataDir, workspaceRoot } from './paths';
@@ -17,6 +17,16 @@ const settingsFile = () => join(userDataDir(), 'settings.json');
 
 const spawnPty: SpawnFn = (shell, args, opts) =>
   nodePty.spawn(shell, args, { name: 'xterm-256color', ...opts });
+
+// No page may navigate away from Forty or open its own Electron window.
+// http(s) links (e.g. Cmd+click in the editor) open in the default browser instead.
+app.on('web-contents-created', (_e, contents) => {
+  contents.on('will-navigate', (event) => event.preventDefault());
+  contents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//.test(url)) void shell.openExternal(url);
+    return { action: 'deny' };
+  });
+});
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -46,20 +56,37 @@ function registerIpc(win: BrowserWindow): void {
   const root = workspaceRoot();
   const ptys = new PtyManager(spawnPty, { shell: process.env.SHELL || '/bin/zsh', cwd: root });
 
-  ipcMain.handle(IPC.settingsLoad, () => loadSettings(settingsFile()));
-  ipcMain.handle(IPC.settingsSave, (_e, s: Settings) => saveSettings(settingsFile(), s));
-  ipcMain.handle(IPC.fsReadText, (_e, rel: string) => readText(root, rel));
-  ipcMain.handle(IPC.fsWriteText, (_e, rel: string, content: string) => writeText(root, rel, content));
+  // Only the main frame of our own window may talk to the main process.
+  const trusted = (e: IpcMainEvent | IpcMainInvokeEvent) =>
+    !win.isDestroyed() && e.sender === win.webContents && e.senderFrame === win.webContents.mainFrame;
+  const handle = (channel: string, fn: (...args: any[]) => unknown) =>
+    ipcMain.handle(channel, (e, ...args) => {
+      if (!trusted(e)) throw new Error('Refusé');
+      return fn(...args);
+    });
+  const on = (channel: string, fn: (...args: any[]) => void) =>
+    ipcMain.on(channel, (e, ...args) => { if (trusted(e)) fn(...args); });
+
+  handle(IPC.settingsLoad, () => loadSettings(settingsFile()));
+  handle(IPC.settingsSave, (s: Settings) => saveSettings(settingsFile(), s));
+  handle(IPC.fsReadText, (rel: string) => readText(root, rel));
+  handle(IPC.fsWriteText, (rel: string, content: string) => writeText(root, rel, content));
 
   const send = (channel: string, ...args: unknown[]) => {
     if (!win.isDestroyed()) win.webContents.send(channel, ...args);
   };
-  ipcMain.handle(IPC.ptySpawn, () =>
+  handle(IPC.ptySpawn, () =>
     ptys.spawn((id, d) => send(IPC.ptyData(id), d), (id, code) => send(IPC.ptyExit(id), code)),
   );
-  ipcMain.on(IPC.ptyWrite, (_e, id: string, d: string) => ptys.write(id, d));
-  ipcMain.on(IPC.ptyResize, (_e, id: string, c: number, r: number) => ptys.resize(id, c, r));
-  ipcMain.on(IPC.ptyKill, (_e, id: string) => ptys.kill(id));
+  on(IPC.ptyWrite, (id: string, d: string) => ptys.write(id, d));
+  on(IPC.ptyResize, (id: string, c: number, r: number) => ptys.resize(id, c, r));
+  on(IPC.ptyKill, (id: string) => ptys.kill(id));
+
+  // A reload or a renderer crash skips React cleanup: kill the shells it owned.
+  win.webContents.on('did-start-navigation', (details) => {
+    if (details.isMainFrame && !details.isSameDocument) ptys.killAll();
+  });
+  win.webContents.on('render-process-gone', () => ptys.killAll());
   win.on('closed', () => ptys.killAll());
 }
 
