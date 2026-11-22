@@ -3,13 +3,14 @@ import { TopBar } from './TopBar';
 import { MissionPanel } from './MissionPanel';
 import { EditorPane } from './EditorPane';
 import { TerminalPane } from './TerminalPane';
+import { SettingsDialog } from './SettingsDialog';
 import { useSettings } from '../state/settings-context';
 import { getTheme } from '../theme/themes';
 import { codeFontFamily } from '../fonts/fonts';
 
 export function Layout() {
   const { settings } = useSettings();
-  const [, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <div className="app" data-testid="app-root">
       <TopBar crumb="Brouillon" onOpenSettings={() => setSettingsOpen(true)} />
@@ -26,6 +27,7 @@ export function Layout() {
           </section>
         </div>
       </main>
+      {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
     </div>
   );
 }
