@@ -262,13 +262,14 @@ La **courbe de l'oubli d'Ebbinghaus** montre qu'on oublie vite ce qu'on n'a vu q
 
 ### 14.4 Le logo
 - **Logo choisi : « Pixels + curseur »**. C'est un F dessiné en carrés (une grille de 5 × 7 pixels), blanc sur fond noir, suivi d'un **curseur de terminal** vertical dans la couleur d'accent du thème (violet `#a98bf5` dans l'icône de l'app).
+- **Variante retenue : C1 « Escalier »**. Le pixel du premier angle (en haut à gauche) est remplacé par un demi-pixel posé en diagonale, et un autre demi-pixel prolonge le bout de la barre du milieu. Ça forme deux petites marches en angle.
 - **Inspiré de l'esprit du logo de 42** (monochrome, géométrique, gras, angles nets), **sans reprendre** ses chiffres, sa police ni sa forme : Forty ne doit pas passer pour un produit officiel de 42.
 - Les déclinaisons :
   - l'**icône de l'app** macOS (carré arrondi 1024 px, fichier `.icns`) ;
   - le **logo de la barre du haut**, qui remplace le petit carré en dégradé actuel ;
   - le **fond du `.dmg`** ;
   - une version qui reste lisible en thème sombre comme en thème clair.
-- Variantes écartées : « Blocs » (A) et « Diagonales » (B).
+- Variantes écartées : « Blocs » (A), « Diagonales » (B), « Losanges » (C2) et « Coupes » (C3).
 
 ## 15. Découpage en étapes
 
