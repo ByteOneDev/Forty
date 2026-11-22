@@ -1,6 +1,6 @@
 # Forty — un IDE pour apprendre à coder, simplement
 
-*Document de conception — 22 novembre 2026*
+*Document de conception — 22 novembre 2026 (mis à jour le même jour : plus d'IA, anti-triche, examens, révisions)*
 
 ## 1. Pourquoi ce projet
 
@@ -12,7 +12,9 @@ Le but de Forty, c'est d'apprendre l'informatique **comme à la piscine** : des 
 
 Forty est aussi pensé pour les élèves **dyslexiques** ou qui ont **du mal à se concentrer** : police au choix, lecture à voix haute, minuteur de concentration, rappels (boire, faire une pause) et encouragements.
 
-Pour qui : **d'abord pour l'auteur**, sur son Mac, avec sa propre clé IA. Ce n'est pas encore un produit à distribuer.
+Forty recrée **les conditions de la piscine** : on apprend seul, **sans IA**, en cherchant, en se trompant et en recommençant. Les sites d'IA sont bloqués (le reste d'internet reste ouvert), et des **examens chronométrés** vérifient qu'on a vraiment compris.
+
+Pour qui : **d'abord pour l'auteur**, sur son Mac. Ce n'est pas encore un produit à distribuer.
 
 ## 2. Objectifs, non-objectifs, anti-objectifs
 
@@ -21,21 +23,25 @@ Pour qui : **d'abord pour l'auteur**, sur son Mac, avec sa propre clé IA. Ce n'
 - Un parcours **Shell obligatoire**. Une fois le Shell fini, on choisit librement le cours suivant parmi **C, Git, Python**, dans l'ordre qu'on veut.
 - Chaque exercice est présenté de façon simple, avec une explication ligne par ligne.
 - Une **correction automatique** à deux niveaux : « Vérifier » pour s'entraîner, et la **Moulinette** classique de la piscine pour le vrai rendu (Git, tout ou rien, note /100, trace).
-- Un **prof IA** qui donne des **indices**, jamais la solution toute faite.
+- **Pas d'IA** : les sites d'IA sont bloqués sur tout le Mac pendant les séances, internet est coupé pendant les examens.
+- Des **examens chronométrés** (intermédiaires et finaux) qui contrôlent le niveau, avec retour sur les modules ratés.
+- Un onglet **Révisions** avec des mini-exercices courts pour ne pas oublier (répétition espacée).
 - Des réglages d'accessibilité et de concentration complets.
 - 6 thèmes (3 sombres, 3 clairs), avec un style inspiré des IDE JetBrains.
 
 **Non-objectifs (pas dans la v1)**
 - Comptes utilisateurs, serveur en ligne, plusieurs élèves.
 - Windows et Linux.
-- Correction entre élèves (peer-evaluation), mode examen, vidéos.
+- Correction entre élèves (peer-evaluation), vidéos.
+- Le **multijoueur** (parler avec d'autres élèves) : idée gardée pour plus tard, rien n'est décidé.
 - Un « vrai » bac à sable isolé (Docker / machine virtuelle).
 
 **Anti-objectifs (si ça arrive, c'est raté, même si ça fonctionne)**
 - Un mot technique qui apparaît **sans explication à portée de clic**.
 - Des murs de texte. Une consigne, c'est des petites étapes.
 - Des rappels qui culpabilisent (« tu as raté ta série ! »). Le ton est toujours bienveillant.
-- Un prof IA qui donne la réponse à copier-coller.
+- Une IA accessible d'une façon ou d'une autre pendant une séance ou un examen.
+- Recopier les énoncés officiels ou les solutions d'élèves (voir section 4).
 - Une interface chargée de boutons et de menus comme VS Code.
 
 ## 3. Comment c'est fabriqué (approche choisie)
@@ -53,7 +59,6 @@ Trois approches ont été comparées :
 - **Monaco** : l'éditeur de code de VS Code.
 - **xterm.js + node-pty** : le terminal de VS Code, branché sur un vrai shell du Mac.
 - **React + TypeScript + Vite** : l'interface.
-- **API Claude** pour le prof IA. La clé est stockée chiffrée dans le trousseau du Mac (`safeStorage` d'Electron).
 - **Stockage local** (fichiers JSON dans le dossier de l'appli) : progression, réglages, statistiques.
 
 ## 4. Organisation des cours (format piscine)
@@ -70,6 +75,8 @@ Cours (ex. Shell)
 - **Chaque mission a un dossier de rendu** : `~/Forty/<cours>/<module>/<exNN>/`, avec les noms de fichiers attendus, comme à la piscine.
 - **Les cours sont des fichiers de contenu** (Markdown + JSON), séparés du code de l'appli. Ajouter un nouveau langage plus tard, c'est ajouter un dossier de contenu, sans toucher au code.
 
+**Sources des exercices** : Forty reprend **le format et la progression de la piscine** (Shell00, Shell01, C00 à C13, examens par niveaux ; exercices du type `ft_putchar`, `ft_strlen`, `ft_atoi`…). Le dépôt `waltergcc/42-Piscine` sert de **référence pour la liste et l'ordre des exercices** (il ne contient que des solutions d'élèves, sans énoncés ni licence). Les énoncés, les explications et les tests de Forty sont **écrits par nous**, dans le style simple de Forty. On ne recopie ni les énoncés officiels, ni les solutions.
+
 **Contenu de la v1** : le **cours Shell complet** (2 modules, environ 15 à 20 missions, inspirés des bases du Shell de piscine : fichiers, dossiers, droits, redirections, pipes, petits scripts). Pour **C, Git et Python**, la structure est prête avec le premier module de chacun. Les modules suivants viendront en étapes séparées.
 
 ## 5. Une mission, écran par écran
@@ -83,30 +90,29 @@ Chaque mission suit toujours le même déroulé, pour ne pas surprendre :
 4. **Bouton « Vérifier ».** La correction d'entraînement tourne (la vraie note, c'est la Moulinette, voir section 6) et affiche un résultat clair :
    - ✅ ce qui marche ;
    - ❌ ce qui ne marche pas, expliqué simplement (« Ton fichier s'appelle `Test.txt`, mais il doit s'appeler `test.txt` : les majuscules comptent »).
-5. **Bouton « Je bloque ».** Le prof IA donne des indices **par paliers** :
-   - palier 1 : une piste ;
-   - palier 2 : une piste plus précise ;
-   - palier 3 : un exemple **similaire**, mais pas la solution.
-
-Il y a aussi un **chat avec le prof IA** à tout moment. Le prof connaît la mission en cours, le code de l'élève et la dernière erreur de correction. Sa consigne permanente : expliquer simplement, avec des images du quotidien, ne jamais donner la solution complète, et toujours vérifier que l'élève a compris.
+5. **Bouton « Je bloque ».** Des indices **écrits à l'avance** pour chaque mission, révélés un par un :
+   - indice 1 : une piste ;
+   - indice 2 : une piste plus précise ;
+   - indice 3 : un exemple **similaire**, mais pas la solution.
+   *(Choix du constructeur : il n'y a plus de prof IA, donc les indices font partie du contenu de la mission.)*
 
 **Croquis de l'écran principal :**
 ```
 ┌───────────────────────────────────────────────────────────────────┐
-│  ◉ Forty    Shell › Shell 00 › ex02        ⏱ 18:42   💧   ⚙︎      │
-├──────────────────┬───────────────────────────────┬────────────────┤
-│  📖 Mission      │  ex02.sh                      │  🎓 Prof       │
-│                  │  1  #!/bin/sh                 │                │
-│  L'idée :        │  2  ls -l                     │  « Tu veux un  │
-│  « Un dossier,   │  3                            │   indice ? »   │
-│  c'est un        │                               │                │
-│  tiroir… »       │                               │  [Je bloque]   │
-│                  ├───────────────────────────────┤                │
-│  ☐ Étape 1       │  $ terminal                   │                │
-│  ☐ Étape 2       │                               │                │
-│  [🔊 Écouter]    │                               │                │
-│  [✓ Vérifier]    │                               │                │
-└──────────────────┴───────────────────────────────┴────────────────┘
+│  ◉ Forty   [Cours] [Révisions] [Examens]   ⏱ 18:42  🛡 IA bloquée  ⚙︎ │
+├──────────────────────┬────────────────────────────────────────────┤
+│  📖 Mission          │  ex02.sh                                   │
+│                      │  1  #!/bin/sh                              │
+│  L'idée :            │  2  ls -l                                  │
+│  « Un dossier,       │  3                                         │
+│  c'est un tiroir… »  │                                            │
+│                      │                                            │
+│  ☐ Étape 1           ├────────────────────────────────────────────┤
+│  ☐ Étape 2           │  $ terminal                                │
+│  [🔊 Écouter]        │                                            │
+│  [💡 Je bloque]      │                                            │
+│  [✓ Vérifier]        │                                            │
+└──────────────────────┴────────────────────────────────────────────┘
 ```
 Les panneaux sont arrondis, avec beaucoup d'espace. Le **mode Focus** masque tout sauf la consigne et l'éditeur.
 
@@ -143,11 +149,12 @@ La Moulinette corrige **un module entier**, avec les règles classiques et stric
 
 ## 7. Accessibilité (dyslexie)
 
-- **Choix de la police** pour le texte : Inter, Lexend, Atkinson Hyperlegible, OpenDyslexic. Pour le code : JetBrains Mono, Fira Code, OpenDyslexic Mono. Toutes ces polices sont libres.
+- **Choix de la police** pour le texte : Inter, Lexend, Atkinson Hyperlegible, OpenDyslexic. Pour le code : JetBrains Mono, Fira Code, Atkinson Hyperlegible Mono. Toutes ces polices sont libres.
 - Réglages de **taille**, d'**espace entre les lettres** et d'**espace entre les lignes**.
-- **Lecture à voix haute** des consignes et des réponses du prof (voix du Mac), avec le mot lu surligné.
+- **Lecture à voix haute** des consignes et des indices (voix du Mac), avec le mot lu surligné.
 - **Règle de lecture** : une bande qui surligne la ligne en cours, dans la consigne comme dans l'éditeur.
 - **Glossaire** : survol d'un mot technique = définition simple.
+- *Note : OpenDyslexic Mono n'existe pas en paquet npm. Atkinson Hyperlegible Mono la remplace pour l'instant ; OpenDyslexic Mono pourra être ajoutée plus tard, après accord pour télécharger la police depuis son site officiel.*
 - Phrases courtes, icônes en plus des couleurs, jamais d'information donnée **seulement** par la couleur.
 
 ## 8. Concentration et bien-être
@@ -180,25 +187,73 @@ Inspiré de l'interface des IDE **JetBrains** (le style, pas leurs logos ni leur
 
 Chaque thème colore à la fois l'interface, l'éditeur et le terminal. Le contraste du texte doit rester confortable (cible AA).
 
-## 10. Réglages et première ouverture
+## 10. Anti-triche : pas d'IA, comme à la piscine
 
-- **Premier lancement** : bienvenue → choix du thème et de la police (avec aperçu en direct) → réglage des rappels → saisie de la clé IA (facultatif : sans clé, tout marche sauf le prof IA) → début du Shell.
+**Pendant les séances (cours et révisions)** :
+- Forty bloque les **sites et services d'IA sur tout le Mac** : dans tous les navigateurs et dans le terminal. Exemples : ChatGPT, Claude, Gemini, Copilot, Perplexity, Mistral, DeepSeek, et leurs adresses d'API.
+- Le **reste d'internet reste ouvert** (documentation, `man`, recherches classiques).
+- La liste des sites bloqués est un fichier de contenu, facile à compléter.
+- **Comment** *(choix du constructeur)* : Forty ajoute la liste au fichier système `/etc/hosts`, dans un bloc bien délimité, et vide le cache DNS. Cette opération demande **le mot de passe du Mac** (fenêtre officielle de macOS). Un petit assistant installé une seule fois peut éviter de redemander le mot de passe à chaque séance.
+- Un badge **« 🛡 IA bloquée »** dans la barre du haut montre que la protection est active.
+- On peut désactiver le blocage, mais seulement de façon volontaire, dans les Réglages, avec le mot de passe, **et jamais pendant un examen**.
+
+**Pendant un examen** :
+- **Internet est coupé complètement** (pare-feu de macOS, `pf`), sauf Forty lui-même. Seuls Forty, l'éditeur et le terminal restent utilisables.
+- **Sécurité** : internet est **toujours rétabli** à la fin de l'examen, si on abandonne, si l'appli plante ou si le Mac redémarre (règle de pare-feu temporaire + nettoyage automatique au démarrage). Un bouton de secours « Rétablir internet » existe aussi dans les Réglages.
+- Limite assumée : sur son propre Mac, un élève qui veut vraiment tricher peut défaire ces protections. Le but est de recréer les **conditions** de la piscine, pas une prison.
+
+## 11. Examens
+
+**Quand** :
+- Des **examens intermédiaires** tous les **3 à 4 modules**. Le découpage exact dépend du cours : on regroupe les modules qui forment un bloc de connaissances (ex. Shell00 + Shell01 ; C00 à C03 ; C04 à C07…).
+- Un **examen final** à la fin de chaque cours.
+- Un examen se débloque quand tous les modules du bloc sont validés.
+
+**Comment ça se passe** (comme les examens de la piscine) :
+- **Chronométré** : 4 h par défaut pour un examen intermédiaire, plus pour un examen final *(durées réglables dans le contenu de chaque examen)*.
+- **Écran examen** : plein écran, éditeur + terminal + consigne, **sans** explications, sans indices, sans glossaire. Internet coupé (section 10).
+- **Exercices tirés au hasard par niveau** : on commence au niveau 0. On réussit l'exercice → on monte d'un niveau, avec un nouvel exercice tiré au hasard. On rate → on retente un autre exercice du même niveau. Chaque exercice est corrigé par la Moulinette, avec ses règles strictes.
+- Chaque exercice est **lié aux modules** dont il vérifie les connaissances.
+
+**Résultat** :
+- Une **note sur 100**, calculée à partir du niveau atteint.
+- **50 % ou plus** : l'examen est réussi et le bloc suivant se débloque.
+- **Moins de 50 %** : Forty montre **les modules où il y a eu le plus d'erreurs** (grâce au lien exercice → module). Ces modules sont **à refaire** : leurs missions repassent en « à revoir » et leur Moulinette doit être revalidée. Ensuite, l'examen peut être **repassé**.
+- Exemple : examen des 10 premiers modules, niveau atteint 4/10, soit 40 %. C'est raté : on refait les modules où les erreurs se concentrent, puis on repasse l'examen jusqu'à dépasser 50 %.
+- **Historique** de tous les examens (date, note, niveau atteint, trace).
+
+## 12. Révisions (ne pas oublier)
+
+La **courbe de l'oubli d'Ebbinghaus** montre qu'on oublie vite ce qu'on n'a vu qu'une fois. Forty a donc un **deuxième onglet, « Révisions »**.
+- **Des fiches** : chaque module crée automatiquement des petites fiches, une par notion (« Que fait `chmod 755` ? », « Écris `ft_putchar` »…).
+- **Des mini-exercices très courts**, de 1 à 3 minutes : une question, une commande à taper, quelques lignes de code à compléter. Ils sont corrigés automatiquement, comme les missions.
+- **Répétition espacée** *(choix du constructeur : algorithme de type SM-2 simplifié)* : une fiche réussie revient de plus en plus tard (1 jour, 3 jours, 1 semaine, 2 semaines, 1 mois…). Une fiche ratée revient le lendemain.
+- **Chaque jour**, un petit paquet de fiches « à réviser aujourd'hui » (10 minutes maximum), rappelé par une notification douce.
+- Si beaucoup de fiches d'un même module sont ratées, Forty propose de **revoir ce module**.
+
+## 13. Réglages et première ouverture
+
+- **Premier lancement** : bienvenue → choix du thème et de la police (avec aperçu en direct) → réglage des rappels → **activation du blocage des sites d'IA** (mot de passe du Mac) → début du Shell.
 - Tous ces choix restent modifiables dans les Réglages.
 
-## 11. Découpage en étapes
+## 14. Découpage en étapes
 
 1. **Squelette** : appli Electron, éditeur, terminal, les 6 thèmes, le choix des polices.
-2. **Moteur de cours** : lecture du contenu, écran de mission, progression, « Vérifier », puis la **Moulinette** (rendu Git, note, trace).
-3. **Cours Shell, module 00**, avec explications ligne par ligne et glossaire.
-4. **Prof IA** : chat et indices par paliers.
-5. **Accessibilité et concentration** : voix, règle de lecture, minuteur, rappels, motivation.
-6. **Cours Shell, module 01**, plus le premier module de C, Git et Python.
+2. **Moteur de cours** : lecture du contenu, écran de mission, progression, « Vérifier », indices, puis la **Moulinette** (rendu Git, note, trace).
+3. **Cours Shell, modules 00 et 01**, avec explications ligne par ligne et glossaire.
+4. **Anti-triche** : blocage des sites d'IA sur tout le Mac, coupure d'internet pour les examens.
+5. **Examens** : écran examen, tirage par niveau, note, retour sur les modules ratés. Premier examen : le bloc Shell.
+6. **Révisions** : fiches, mini-exercices, répétition espacée.
+7. **Accessibilité et concentration** : voix, règle de lecture, minuteur, rappels, motivation.
+8. **Cours C**, puis Git et Python, module par module, avec leurs examens.
+9. *Plus tard* : multijoueur (à concevoir).
 
-## 12. Choix laissés au constructeur
+## 15. Choix laissés au constructeur
 
 - L'organisation exacte des fichiers et les noms internes.
-- Le modèle Claude utilisé (un modèle puissant pour le prof, un modèle rapide pour les petites tâches comme le glossaire).
-- Le format exact des fichiers de contenu et de tests.
+- Le format exact des fichiers de contenu, de tests, d'examens et de fiches.
 - Les couleurs exactes des thèmes, à faire valider à l'écran.
-- La rédaction des missions, en suivant les règles des sections 5 et 7.
+- La rédaction des missions, des indices et des fiches, en suivant les règles des sections 5 et 7.
+- La liste exacte des sites d'IA bloqués.
+- Le découpage précis des blocs d'examen pour chaque cours.
 - Le shell du terminal intégré : zsh, celui du Mac. Les scripts d'exercice sont testés avec `bash`.

@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-22-forty-ide-design.md` (this plan implements section 11 step 1: sections 3, 9, the font part of 7, and the main-screen layout sketch of 5).
 
-This is plan 1 of 6. Later plans: 2 course engine + Vérifier + Moulinette, 3 Shell 00 content, 4 AI tutor, 5 accessibility & focus, 6 remaining content.
+This is plan 1. Later plans follow spec §14: course engine + Moulinette, Shell content, anti-cheat, exams, revisions, accessibility & focus, C/Git/Python.
 
 ## Global Constraints
 
@@ -59,7 +59,7 @@ src/renderer/
   theme/adapters.ts   themeCssVars(), toMonacoTheme(), toXtermTheme()
   fonts/fonts.ts      UI_FONTS, CODE_FONTS (id, label, css family), imports @fontsource css
   state/settings-context.tsx  SettingsProvider, useSettings()
-  components/TopBar.tsx, Layout.tsx, MissionPanel.tsx, TutorPanel.tsx
+  components/TopBar.tsx, Layout.tsx, MissionPanel.tsx
   components/EditorPane.tsx, TerminalPane.tsx, SettingsDialog.tsx
 tests/unit/*.test.ts(x)   Vitest
 tests/e2e/*.spec.ts       Playwright + Electron
@@ -251,7 +251,7 @@ class PtyManager {
 ### Task 6: Main screen — design system, layout and editor
 
 **Files:**
-- Create: `src/renderer/styles/global.css`, `src/renderer/fonts/fonts.ts`, `src/renderer/state/settings-context.tsx`, `src/renderer/components/{TopBar,Layout,MissionPanel,TutorPanel,EditorPane}.tsx`
+- Create: `src/renderer/styles/global.css`, `src/renderer/fonts/fonts.ts`, `src/renderer/state/settings-context.tsx`, `src/renderer/components/{TopBar,Layout,MissionPanel,EditorPane}.tsx`
 - Modify: `src/renderer/App.tsx`, `src/renderer/main.tsx`
 - Test: `tests/unit/settings-context.test.tsx`, `tests/e2e/editor.spec.ts`
 
@@ -259,7 +259,7 @@ class PtyManager {
 - Consumes: `FortyApi` (Task 2/4/5), `THEMES`, `themeCssVars`, `toMonacoTheme` (Task 3), `TerminalPane` (Task 5).
 - Produces: `UI_FONTS` / `CODE_FONTS`: `{ id; label; family: string }[]` (labels: « Inter », « Lexend », « Atkinson Hyperlegible », « OpenDyslexic » / « JetBrains Mono », « Fira Code », « Atkinson Hyperlegible Mono »); `SettingsProvider` loads settings via `forty.settings.load()`, applies `themeCssVars` + `--ui-font`, `--code-font`, `--font-size`, `--letter-spacing`, `--line-height` on `document.documentElement`, sets `data-theme-kind`; `useSettings(): { settings: Settings; update(patch: Partial<Settings>): void }` (`update` applies immediately and saves, debounced 300 ms).
 - CSS tokens in `global.css`: `--space-1..6` = 4, 8, 12, 16, 24, 32 px; `--radius-sm/md/lg` = 8, 10, 12 px; panels `background: var(--surface)`, `border-radius: var(--radius-lg)`, gap `var(--space-3)` between panels on `var(--bg)`; buttons `--radius-md`, padding `8px 14px`, primary = `accent`/`onAccent`.
-- Layout (spec §5 sketch): top bar (logo « Forty », breadcrumb placeholder « Brouillon », settings button ⚙︎ with `aria-label="Réglages"`); left `MissionPanel` (placeholder text « Ta mission s'affichera ici. »), center column = `EditorPane` over `TerminalPane` (60/40), right `TutorPanel` (placeholder « Ton prof IA arrivera bientôt. »). Left/right panels 300 px.
+- Layout (spec §5 sketch): top bar (logo « Forty », breadcrumb placeholder « Brouillon », settings button ⚙︎ with `aria-label="Réglages"`); left `MissionPanel` (placeholder text « Ta mission s'affichera ici. »), right column = `EditorPane` over `TerminalPane` (60/40). Left panel 320 px. (No tutor panel: the AI tutor was removed from the spec.)
 - `EditorPane` opens `brouillon.sh` via `forty.fs.readText`, language `shell`, Cmd+S → `forty.fs.writeText`, shows « Enregistré ✓ » for 2 s. Monaco options: `fontFamily` from code font, `fontSize`, `lineHeight` (px = fontSize × lineHeight), `letterSpacing` (px), `minimap: { enabled: false }`, `renderLineHighlight: 'all'`, `padding: { top: 16 }`, `roundedSelection: true`.
 
 - [ ] **Step 1: Write failing unit test** (`settings-context.test.tsx`, jsdom, `window.forty` stubbed): after provider mounts with stored `themeId: 'sable'`, `document.documentElement.style.getPropertyValue('--bg')` is `#f5efe3`; calling `update({ fontSize: 18 })` sets `--font-size` to `18px` and calls `forty.settings.save` once after 300 ms (fake timers).
