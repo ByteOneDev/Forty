@@ -236,24 +236,60 @@ La **courbe de l'oubli d'Ebbinghaus** montre qu'on oublie vite ce qu'on n'a vu q
 - **Premier lancement** : bienvenue → choix du thème et de la police (avec aperçu en direct) → réglage des rappels → **activation du blocage des sites d'IA** (mot de passe du Mac) → début du Shell.
 - Tous ces choix restent modifiables dans les Réglages.
 
-## 14. Découpage en étapes
+## 14. App installable, mises à jour et logo
 
-1. **Squelette** : appli Electron, éditeur, terminal, les 6 thèmes, le choix des polices.
-2. **Moteur de cours** : lecture du contenu, écran de mission, progression, « Vérifier », indices, puis la **Moulinette** (rendu Git, note, trace).
-3. **Cours Shell, modules 00 et 01**, avec explications ligne par ligne et glossaire.
-4. **Anti-triche** : blocage des sites d'IA sur tout le Mac, coupure d'internet pour les examens.
-5. **Examens** : écran examen, tirage par niveau, note, retour sur les modules ratés. Premier examen : le bloc Shell.
-6. **Révisions** : fiches, mini-exercices, répétition espacée.
-7. **Accessibilité et concentration** : voix, règle de lecture, minuteur, rappels, motivation.
-8. **Cours C**, puis Git et Python, module par module, avec leurs examens.
-9. *Plus tard* : multijoueur (à concevoir).
+### 14.1 L'app à installer (.dmg)
+- Forty est livré comme une **vraie app Mac** : un fichier `Forty-<version>.dmg`. On l'ouvre et on glisse Forty dans **Applications**.
+- *(Choix du constructeur)* **electron-builder** fabrique le `.dmg`. C'est une version **universelle** (puces Apple et Intel), avec un fond de `.dmg` aux couleurs de Forty et une flèche « glisse ici ».
+- **Pas de compte développeur Apple** : l'app n'est pas signée par Apple. La toute première fois, macOS demande une confirmation. Il faut faire **clic droit sur Forty → « Ouvrir »**. Forty l'explique sur la page de téléchargement et dans le `.dmg`.
+- Tes données ne sont **jamais dans l'app** : les réglages sont dans le dossier de l'app (userData), le travail et la progression dans `~/Forty`. Remplacer l'app ne perd donc rien.
 
-## 15. Choix laissés au constructeur
+### 14.2 Où vivent les versions
+- Le code et les versions sont sur un **dépôt GitHub public**.
+- Une version = un numéro (ex. `0.3.0`), une **GitHub Release** avec le `.dmg`, son empreinte SHA-256 et une note « Quoi de neuf » écrite en phrases simples.
+- *(Choix du constructeur)* Les `.dmg` sont fabriqués par **GitHub Actions** (sur un Mac de GitHub) dès qu'on crée une étiquette `vX.Y.Z`. Une commande `npm run release` prépare le numéro et l'étiquette.
+
+### 14.3 Les mises à jour
+- **Quand** : au lancement, puis toutes les 24 h, Forty demande à GitHub s'il existe une version plus récente. Pas de clé, pas de compte. **Jamais pendant un examen** (internet est coupé de toute façon).
+- **Comment on te prévient** : un petit bandeau doux, « Nouvelle version 0.3.0 disponible », avec « Quoi de neuf » et deux boutons : **« Mettre à jour »** et **« Plus tard »**.
+- **« Mettre à jour »** : Forty télécharge le `.dmg` dans `Téléchargements`, **vérifie son empreinte** (pour être sûr que le fichier n'est pas abîmé ou modifié), l'ouvre, puis affiche 3 étapes illustrées :
+  1. quitter Forty ;
+  2. glisser la nouvelle version dans Applications ;
+  3. choisir « Remplacer ».
+- Sans compte Apple, la mise à jour **100 % automatique et silencieuse n'est pas possible** : macOS l'interdit pour les apps non signées. C'est pour ça qu'on passe par le `.dmg`. Si un compte Apple est pris plus tard, on pourra passer à la mise à jour silencieuse (electron-updater) sans rien changer d'autre.
+- Le blocage des sites d'IA (section 10) reste actif d'une version à l'autre.
+- Dans les Réglages : la version installée, un bouton « Chercher une mise à jour » et la possibilité de couper la vérification automatique.
+
+### 14.4 Le logo
+- **Idée choisie : un monogramme « F »**. C'est un F massif fait de blocs géométriques, en **noir et blanc**.
+- **Inspiré de l'esprit du logo de 42** (monochrome, géométrique, gras, angles nets), **sans reprendre** ses chiffres, sa police ni sa forme : Forty ne doit pas passer pour un produit officiel de 42.
+- Les déclinaisons :
+  - l'**icône de l'app** macOS (carré arrondi 1024 px, fichier `.icns`) ;
+  - le **logo de la barre du haut**, qui remplace le petit carré en dégradé actuel ;
+  - le **fond du `.dmg`** ;
+  - une version qui reste lisible en thème sombre comme en thème clair.
+- 2 ou 3 variantes sont dessinées puis montrées à l'utilisateur, qui choisit.
+
+## 15. Découpage en étapes
+
+1. **Squelette** : appli Electron, éditeur, terminal, les 6 thèmes, le choix des polices. *(fait)*
+2. **App installable** : logo, `.dmg`, versions sur GitHub, mises à jour (section 14).
+3. **Moteur de cours** : lecture du contenu, écran de mission, progression, « Vérifier », indices, puis la **Moulinette** (rendu Git, note, trace).
+4. **Cours Shell, modules 00 et 01**, avec explications ligne par ligne et glossaire.
+5. **Anti-triche** : blocage des sites d'IA sur tout le Mac, coupure d'internet pour les examens.
+6. **Examens** : écran examen, tirage par niveau, note, retour sur les modules ratés. Premier examen : le bloc Shell.
+7. **Révisions** : fiches, mini-exercices, répétition espacée.
+8. **Accessibilité et concentration** : voix, règle de lecture, minuteur, rappels, motivation.
+9. **Cours C**, puis Git et Python, module par module, avec leurs examens.
+10. *Plus tard* : multijoueur (à concevoir).
+
+## 16. Choix laissés au constructeur
 
 - L'organisation exacte des fichiers et les noms internes.
 - Le format exact des fichiers de contenu, de tests, d'examens et de fiches.
 - Les couleurs exactes des thèmes, à faire valider à l'écran.
 - La rédaction des missions, des indices et des fiches, en suivant les règles des sections 5 et 7.
 - La liste exacte des sites d'IA bloqués.
+- Le dessin exact du logo, à faire choisir parmi 2 ou 3 variantes.
 - Le découpage précis des blocs d'examen pour chaque cours.
 - Le shell du terminal intégré : zsh, celui du Mac. Les scripts d'exercice sont testés avec `bash`.
