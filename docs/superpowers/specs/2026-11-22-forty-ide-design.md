@@ -261,14 +261,14 @@ La **courbe de l'oubli d'Ebbinghaus** montre qu'on oublie vite ce qu'on n'a vu q
 - Dans les Réglages : la version installée, un bouton « Chercher une mise à jour » et la possibilité de couper la vérification automatique.
 
 ### 14.4 Le logo
-- **Idée choisie : un monogramme « F »**. C'est un F massif fait de blocs géométriques, en **noir et blanc**.
+- **Logo choisi : « Pixels + curseur »**. C'est un F dessiné en carrés (une grille de 5 × 7 pixels), blanc sur fond noir, suivi d'un **curseur de terminal** vertical dans la couleur d'accent du thème (violet `#a98bf5` dans l'icône de l'app).
 - **Inspiré de l'esprit du logo de 42** (monochrome, géométrique, gras, angles nets), **sans reprendre** ses chiffres, sa police ni sa forme : Forty ne doit pas passer pour un produit officiel de 42.
 - Les déclinaisons :
   - l'**icône de l'app** macOS (carré arrondi 1024 px, fichier `.icns`) ;
   - le **logo de la barre du haut**, qui remplace le petit carré en dégradé actuel ;
   - le **fond du `.dmg`** ;
   - une version qui reste lisible en thème sombre comme en thème clair.
-- 2 ou 3 variantes sont dessinées puis montrées à l'utilisateur, qui choisit.
+- Variantes écartées : « Blocs » (A) et « Diagonales » (B).
 
 ## 15. Découpage en étapes
 
@@ -290,6 +290,5 @@ La **courbe de l'oubli d'Ebbinghaus** montre qu'on oublie vite ce qu'on n'a vu q
 - Les couleurs exactes des thèmes, à faire valider à l'écran.
 - La rédaction des missions, des indices et des fiches, en suivant les règles des sections 5 et 7.
 - La liste exacte des sites d'IA bloqués.
-- Le dessin exact du logo, à faire choisir parmi 2 ou 3 variantes.
 - Le découpage précis des blocs d'examen pour chaque cours.
 - Le shell du terminal intégré : zsh, celui du Mac. Les scripts d'exercice sont testés avec `bash`.
