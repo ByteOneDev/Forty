@@ -20,8 +20,15 @@ export class PtyManager {
 
   spawn(onData: (id: string, d: string) => void, onExit: (id: string, code: number) => void): string {
     const id = `pty-${this.next++}`;
-    const env = { ...(process.env as Record<string, string>), TERM: 'xterm-256color', FORTY: '1' };
-    const pty = this.spawnFn(this.opts.shell, [], { cwd: this.opts.cwd, cols: 80, rows: 24, env });
+    const env: Record<string, string> = {
+      ...(process.env as Record<string, string>),
+      TERM: 'xterm-256color',
+      FORTY: '1',
+      // Apps opened from Finder get no locale: without it zsh mangles accents.
+      LANG: process.env.LANG || 'fr_FR.UTF-8',
+    };
+    // Login shell, like Terminal.app, so ~/.zprofile (Homebrew paths…) is read.
+    const pty = this.spawnFn(this.opts.shell, ['-l'], { cwd: this.opts.cwd, cols: 80, rows: 24, env });
     this.ptys.set(id, pty);
     pty.onData((d) => onData(id, d));
     pty.onExit(({ exitCode }) => {

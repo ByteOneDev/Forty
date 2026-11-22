@@ -41,9 +41,33 @@ describe('PtyManager', () => {
     mgr.spawn(vi.fn(), vi.fn());
     const [shell, args, opts] = (spawn as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(shell).toBe('/bin/zsh');
-    expect(args).toEqual([]);
+    expect(args).toEqual(['-l']);
     expect(opts).toMatchObject({ cwd: '/tmp/forty', cols: 80, rows: 24 });
     expect(opts.env).toMatchObject({ TERM: 'xterm-256color', FORTY: '1' });
+  });
+
+  it('sets a UTF-8 French locale when the app has none (opened from Finder)', () => {
+    const saved = process.env.LANG;
+    delete process.env.LANG;
+    try {
+      const { mgr, spawn } = setup();
+      mgr.spawn(vi.fn(), vi.fn());
+      expect((spawn as ReturnType<typeof vi.fn>).mock.calls[0][2].env.LANG).toBe('fr_FR.UTF-8');
+    } finally {
+      if (saved !== undefined) process.env.LANG = saved;
+    }
+  });
+
+  it('keeps an existing locale', () => {
+    const saved = process.env.LANG;
+    process.env.LANG = 'en_GB.UTF-8';
+    try {
+      const { mgr, spawn } = setup();
+      mgr.spawn(vi.fn(), vi.fn());
+      expect((spawn as ReturnType<typeof vi.fn>).mock.calls[0][2].env.LANG).toBe('en_GB.UTF-8');
+    } finally {
+      if (saved === undefined) delete process.env.LANG; else process.env.LANG = saved;
+    }
   });
 
   it('forwards writes and resizes', () => {

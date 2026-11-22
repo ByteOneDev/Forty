@@ -11,6 +11,7 @@ export function EditorPane() {
   const [text, setText] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const autoTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     window.forty.fs.readText(FILE).then((t) => setText(t ?? ''));
@@ -23,10 +24,16 @@ export function EditorPane() {
 
   const onMount: OnMount = (editor) => {
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
+      clearTimeout(autoTimer.current);
       await window.forty.fs.writeText(FILE, editor.getValue());
       setSaved(true);
       clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setSaved(false), 2000);
+    });
+    // Beginners forget Cmd+S: also save quietly 800 ms after typing stops.
+    editor.onDidChangeModelContent(() => {
+      clearTimeout(autoTimer.current);
+      autoTimer.current = setTimeout(() => void window.forty.fs.writeText(FILE, editor.getValue()), 800);
     });
     editor.focus();
   };

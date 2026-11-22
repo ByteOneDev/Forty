@@ -25,3 +25,14 @@ test('opens brouillon.sh and saves it with Cmd+S', async () => {
   await expect.poll(() => readFileSync(join(home, 'brouillon.sh'), 'utf8')).toContain('echo test-save');
   await app.close();
 });
+
+test('saves the code automatically without Cmd+S', async () => {
+  const { app, page, home } = await launchApp();
+  const editor = page.getByTestId('editor');
+  await expect(editor.locator('.view-lines')).toContainText('Bonjour Forty', { timeout: 10000 });
+  await editor.locator('.view-lines').click();
+  await page.keyboard.press('Meta+ArrowDown');
+  await page.keyboard.type('echo auto-save');
+  await expect.poll(() => readFileSync(join(home, 'brouillon.sh'), 'utf8'), { timeout: 4000 }).toContain('echo auto-save');
+  await app.close();
+});
