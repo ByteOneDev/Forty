@@ -1,14 +1,11 @@
-import { DEFAULT_SETTINGS } from '@shared/settings';
-import { TerminalPane } from './components/TerminalPane';
-import { getTheme } from './theme/themes';
-import { codeFontFamily } from './fonts/fonts';
+import './styles/global.css';
+import { SettingsProvider } from './state/settings-context';
+import { Layout } from './components/Layout';
 
 export function App() {
   return (
-    <div data-testid="app-root" style={{ position: 'fixed', inset: 0, display: 'flex' }}>
-      <div style={{ flex: 1, position: 'relative' }}>
-        <TerminalPane theme={getTheme(DEFAULT_SETTINGS.themeId)} fontFamily={codeFontFamily('jetbrains-mono')} fontSize={14} />
-      </div>
-    </div>
+    <SettingsProvider>
+      <Layout />
+    </SettingsProvider>
   );
 }

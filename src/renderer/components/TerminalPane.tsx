@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
-import '../terminal.css';
 import type { Theme } from '../theme/themes';
 import { toXtermTheme } from '../theme/adapters';
 
